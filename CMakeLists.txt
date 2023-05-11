@@ -22,7 +22,12 @@ set(SOURCES Sources/Server.h Sources/Server.cpp
             Sources/SetRange.h Sources/SetRange.cpp
             Sources/GetResult.h Sources/GetResult.cpp
             Sources/GetStatus.h Sources/GetStatus.cpp
-            Sources/RangeVoltage.h Sources/RangeVoltage.cpp)
+            Sources/RangeVoltage.h Sources/RangeVoltage.cpp
+            Sources/SocketServer.h Sources/SocketServer.cpp
+            Sources/System.h Sources/System.cpp
+            Sources/CommunicationCenter.h Sources/CommunicationCenter.cpp
+            Sources/Dispatcher.h Sources/Dispatcher.cpp
+            )
 
 add_executable(ServerMultimetr
   main.cpp
