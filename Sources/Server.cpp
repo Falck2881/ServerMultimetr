@@ -3,103 +3,22 @@
 #include <string>
 
 Server::Server():
-    pathToAddres("/tmp/socketForMultimetr"),
-    mainAddressSocket_fd(0)
+    socketServer{std::make_unique<Socket>()},
+    dispatcher{std::make_unique<Dispatcher>(socketServer->get())}
 {
-    removeOldSassion();
-    initialize();
-}
 
-void Server::removeOldSassion()
-{
-    int result = remove(pathToAddres.data());
-
-    if(result != -1)
-        std::cout << "Server: Old session successfully remove.\n" << std::endl;
-}
-
-void Server::initialize()
-{
-    createSocket();
-    bindSocketToTheAddres();
-    makePassiveSocketListening();
-    startObserver();
-}
-
-void Server::createSocket()
-{
-    mainAddressSocket_fd = socket(AF_UNIX, SOCK_STREAM, 0);
-
-    if(mainAddressSocket_fd == -1)
-    {
-        std::cout << "Server: Failed to create socket of passive.\n" << std::endl;
-        exit(1);
-    }
-}
-
-void Server::bindSocketToTheAddres()
-{
-    memset(&localSocket, 0, sizeof(localSocket));
-    localSocket.sun_family = AF_UNIX;
-    strncpy(localSocket.sun_path, pathToAddres.data(), sizeof(localSocket.sun_path)-1);
-
-    if(bind(mainAddressSocket_fd,reinterpret_cast<const struct sockaddr*>(&localSocket),sizeof(localSocket)) == -1)
-    {
-        std::cout << "Server: Failed to bind the socket to addres.\n" << std::endl;
-        exit(1);
-    }
-}
-
-void Server::makePassiveSocketListening()
-{
-    const int maxBackLog{100};
-    const int result = listen(mainAddressSocket_fd, maxBackLog);
-    if(result == -1)
-    {
-        std::cout <<  "Server: Failed to make passive socket listening.\n" << std::endl;
-        exit(1);
-    }
-}
-
-void Server::startObserver()
-{
-    observerForIncoming_fd = epoll_create1(0);
-
-    if(observerForIncoming_fd == -1){
-        std::cout << "Server: Failed to create instance 'epoll'.\n" << std::endl;
-        exit(1);
-    }
-
-    addSocketForObserving(mainAddressSocket_fd);
-}
-
-void Server::addSocketForObserving(const int socket_fd)
-{
-    observerAtClients.events = EPOLLIN | EPOLLET;
-    observerAtClients.data.fd = socket_fd;
-
-    if(epoll_ctl(observerForIncoming_fd, EPOLL_CTL_ADD, socket_fd, &observerAtClients) == -1)
-    {
-        std::cout << "Failed request a operation 'op' for file of description\n" << std::endl;
-        exit(-1);
-    }
 }
 
 void Server::run()
 {
     while(true)
     {
-        int countIncomingCalls{waitForIncomingCalls()};
+        int countIncomingCalls{dispatcher->waitForIncomingCalls()};
 
         if(incomingExist(countIncomingCalls))
             workWithClints(countIncomingCalls);
 
     }
-}
-
-int Server::waitForIncomingCalls()
-{
-    return epoll_wait(observerForIncoming_fd, incomingCallsFromClients.data(), MAXCALLS, -1);
 }
 
 bool Server::incomingExist(const int countIncomingCalls) const
@@ -111,30 +30,30 @@ void Server::workWithClints(const int countIncomingCalls)
 {
     for(int i{0}; i < countIncomingCalls; ++i)
     {
-        if(isNoClientReserved(incomingCallsFromClients.at(i).data.fd))
+        if(isNoClientReserved(dispatcher->callingOfClient(i)))
             registerClient();
         else{
-            std::string answer = executeRequestClient(incomingCallsFromClients.at(i).data.fd);
-            notifyClient(incomingCallsFromClients.at(i).data.fd, answer);
-            checkPresenceClient(incomingCallsFromClients.at(i).data.fd);
+            std::string answer = executeRequestClient(dispatcher->callingOfClient(i));
+            notifyClient(dispatcher->callingOfClient(i), answer);
+            checkPresenceClient(dispatcher->callingOfClient(i));
         }
     }
 }
 
-bool Server::isNoClientReserved(const int socket_fd) const
+bool Server::isNoClientReserved(const int socketClient_fd) const
 {
-    return socket_fd == mainAddressSocket_fd;
+    return socketClient_fd == socketServer->get();
 }
 
 void Server::registerClient()
 {
-    const int newClient_fd{accept(mainAddressSocket_fd,NULL,NULL)};
+    const int newClient_fd{accept(socketServer->get(),NULL,NULL)};
 
     if(newClient_fd == -1){
         std::cout << "Server: Failed links with client.\n" << std::endl;
         exit(1);
     }
-    addSocketForObserving(newClient_fd);
+    dispatcher->addSocketForObserving(newClient_fd);
     addClientIntoNotebook(newClient_fd);
 }
 
@@ -203,6 +122,7 @@ void Server::resetConnectionWithClient(const int socket_fd)
         multimetr->completeExecutionAllChannels();
         notebookOfClients.erase(socket_fd);
         std::cout << "Server: Client - ' " << socket_fd << " ' were disabled.\n" << std::endl;
+        Sys::closeSocket(socket_fd);
         errno = ECONNRESET;
     }
 }

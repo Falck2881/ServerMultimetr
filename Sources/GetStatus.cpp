@@ -20,10 +20,10 @@ void GetStatus::execute(const std::string &name)
     }
 
     if(channel->checkStatusActivity())
-        message = std::string("idle_state:\n Range of Voltage: [" + channel->getVoltage() +"].\n"
+        message = std::string("idle_state: Range of Voltage: [" + channel->getVoltage() + "]." +
                                             "State: '" + channel->getName() + "' paused.\n");
     else
-        message = std::string("busy_state:\n State:" + channel->getName() + " paused.\n");
+        message = std::string("busy_state: State:" + channel->getName() + " paused.\n");
 
 }
 
