@@ -122,7 +122,6 @@ void Server::resetConnectionWithClient(const int socket_fd)
         multimetr->completeExecutionAllChannels();
         notebookOfClients.erase(socket_fd);
         std::cout << "Server: Client - ' " << socket_fd << " ' were disabled.\n" << std::endl;
-        Sys::closeSocket(socket_fd);
         errno = ECONNRESET;
     }
 }

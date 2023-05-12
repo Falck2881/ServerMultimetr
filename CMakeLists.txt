@@ -27,6 +27,7 @@ set(SOURCES Sources/Server.h Sources/Server.cpp
             Sources/System.h Sources/System.cpp
             Sources/CommunicationCenter.h Sources/CommunicationCenter.cpp
             Sources/Dispatcher.h Sources/Dispatcher.cpp
+
             )
 
 add_executable(ServerMultimetr

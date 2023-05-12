@@ -100,6 +100,8 @@ std::string Multimetr::executeCommand(std::string &name)
             resultMeasure->execute(getParameters(name));
             resultExecute = resultMeasure->answer();
             break;
+        default:
+            break;
     }
 
     return resultExecute;
@@ -118,6 +120,8 @@ TypeCommand Multimetr::determineCommand(const std::string& name)
         return TypeCommand::STATUS_OF_DEVICE;
     else if(name.find("get_result") != std::string::npos)
         return TypeCommand::RESULT_OF_MEASURE;
+    else
+        return TypeCommand::NO_COMMAND;
 
 }
 
