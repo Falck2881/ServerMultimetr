@@ -12,7 +12,7 @@
 #define MAX_COUNT_CHANNEL 5
 
 enum class TypeCommand{START_OF_MEASURE, SET_RANGE, STOP_OF_MEASURE,
-                        STATUS_OF_DEVICE, RESULT_OF_MEASURE};
+                        STATUS_OF_DEVICE, RESULT_OF_MEASURE, NO_COMMAND};
 
 using HintToInsertChannel = std::map<std::string, std::shared_ptr<Channel>>::iterator;
 using HintToInsertTaskChannel = std::map<std::string, std::thread>::iterator;

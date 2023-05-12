@@ -20,7 +20,8 @@ void Dispatcher::addSocketForObserving(const int socket_fd)
 
     const int result{epoll_ctl(event_fd, EPOLL_CTL_ADD, socket_fd, &observeAtIncoming)};
 
-    if(techicalSupport.isOpeartionSuccessfully(result,"Server: Failed request a operation 'op' for file of description\n"))
+    std::string message = "Server: Failed request a operation 'op' for client - " + std::to_string(socket_fd) + "\n";
+    if(techicalSupport.isOpeartionSuccessfully(result, message))
         std::cout << "Server: Successfully registration file of description.\n" << std::endl;
 }
 
