@@ -1,5 +1,6 @@
 #include "Dispatcher.h"
 #include "System.h"
+#include <signal.h>
 #include <iostream>
 
 Dispatcher::Dispatcher(const int socketServer)
@@ -27,7 +28,9 @@ void Dispatcher::addSocketForObserving(const int socket_fd)
 
 int Dispatcher::waitForIncomingCalls()
 {
-    return epoll_wait(event_fd, incomingCalls.data(), MAXCALLS, -1);
+    int result = epoll_wait(event_fd, incomingCalls.data(), MAXCALLS, -1);
+
+    return result;
 }
 
 int Dispatcher::callingOfClient(const int index)

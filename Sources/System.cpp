@@ -31,11 +31,10 @@ bool Sys::errorToRead(const int result)
     return result == -1 || result == 0 ? true : false;
 }
 
-void Sys::closeSocket(int socket_fd)
+int Sys::closeSocket(int socket_fd)
 {
-    close(socket_fd);
+    return close(socket_fd);
 }
-
 
 int Sys::createEventPoll(const int flag)
 {

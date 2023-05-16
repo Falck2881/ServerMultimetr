@@ -31,3 +31,12 @@ std::string CommunicationCenter::errorInConnection()
 }
 
 
+bool CommunicationCenter::isClientDisconnected(const int result) const
+{
+    if(result == -1 && errno == EPIPE){
+        errno = ECONNRESET;
+        return true;
+    }
+    else return false;
+
+}
