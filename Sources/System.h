@@ -14,7 +14,7 @@ namespace Sys {
     int reciveAnswer(const int fileDescription, const char* buffer, const size_t sizeBuffer);
     bool errorToSend(const int result);
     bool errorToRead(const int result);
-    void closeSocket(int socket_fd);
+    int closeSocket(int socket_fd);
     int createEventPoll(const int flag);
 }
 
