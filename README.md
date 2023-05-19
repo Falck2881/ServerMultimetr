@@ -18,5 +18,7 @@ $ cd buildServer
 $ ./ServerMultimetr
 
 ```
+## Result
 
+![image](https://github.com/Falck2881/ServerMultimetr/assets/100667839/9730fa40-5463-4cdc-80ff-df7720171e56)
 
